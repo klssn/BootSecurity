@@ -8,11 +8,11 @@ public interface UserService {
 
     void registerNewUser(User user, String role);
 
-    void removeUserByUsername(String username);
+    void removeUserByEmail(String email);
 
-    void editUser (User user);
+    void editUser (User user, String role);
 
     User getUserById(Long id);
-    User getUserByUsername(String username);
+    User getUserByEmail(String email);
     List<User> getAllUsers();
 }

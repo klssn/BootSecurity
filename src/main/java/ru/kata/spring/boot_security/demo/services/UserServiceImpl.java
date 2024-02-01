@@ -63,12 +63,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void removeUserByUsername(String username) {
-        userDAO.deleteUserByUsername(username);
+    public void removeUserByEmail(String email) {
+        userDAO.deleteUserByEmail(email);
     }
 
     @Override
-    public void editUser(User formUser) {
+    public void editUser(User formUser, String role) {
         User user = userDAO.getUserById(formUser.getId());
         if (user != null) {
             if (!formUser.getFirstName().equals(user.getFirstName())) {
@@ -87,6 +87,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 user.setPassword(passwordEncoder.encode(formUser.getPassword()));
             }
 
+            Set<Role> roles = new HashSet<>();
+
+            Role adminRole = roleDAO.findByRole("ADMIN");
+            if (adminRole == null) {
+                adminRole = new Role("ADMIN");
+                roleDAO.addRole(adminRole);
+            }
+            Role userRole = roleDAO.findByRole("USER");
+            if (userRole == null) {
+                userRole = new Role("USER");
+                roleDAO.addRole(userRole);
+            }
+
+            if ("ADMIN".equals(role)) {
+                roles.add(userRole);
+                roles.add(adminRole);
+            } else if ("USER".equals(role)) {
+                roles.add(userRole);
+            }
+            user.setRoles(roles);
+
+
         }
         userDAO.updateUserInfo(user);
     }
@@ -97,8 +119,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User getUserByUsername(String username) {
-        return userDAO.getUserByUsername(username);
+    public User getUserByEmail(String email) {
+        return userDAO.getUserByEmail(email);
     }
 
     @Override
@@ -108,7 +130,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDAO.getUserByUsername(username);
+        User user = userDAO.getUserByEmail(username);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }

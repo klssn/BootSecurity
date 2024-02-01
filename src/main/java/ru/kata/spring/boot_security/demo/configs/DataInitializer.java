@@ -31,8 +31,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userDAO.getUserByUsername("test") == null) {
-            User user = new User("Name", "Surname", (byte) 30, "test", "email@example.com", passwordEncoder.encode("password"));
+        if (userDAO.getUserByEmail("user@email.com") == null) {
+            User user = new User("Name", "Surname", (byte) 30, "user@email.com", passwordEncoder.encode("password"));
 
             Role userRole = roleDAO.findByRole("USER");
             if (userRole == null) {
@@ -46,8 +46,8 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
 
-        if (userDAO.getUserByUsername("admin") == null) {
-            User admin = new User("Name", "Surname", (byte) 30, "admin", "admin_email@example.com", passwordEncoder.encode("password"));
+        if (userDAO.getUserByEmail("admin@email.com") == null) {
+            User admin = new User("Name", "Surname", (byte) 30, "admin@email.com", passwordEncoder.encode("password"));
 
             Role userRole = roleDAO.findByRole("USER");
             if (userRole == null) {

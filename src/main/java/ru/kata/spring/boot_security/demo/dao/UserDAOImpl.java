@@ -28,8 +28,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional
-    public void deleteUserByUsername(String username) {
-        User user = getUserByUsername(username);
+    public void deleteUserByEmail(String email) {
+        User user = getUserByEmail(email);
         if (user != null) {
             entityManager.remove(user);
         }
@@ -44,14 +44,14 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User getUserByUsername(String username) {
+    public User getUserByEmail(String email) {
         try {
-            String query = "FROM User WHERE username = :username";
+            String query = "FROM User WHERE email = :email";
             return entityManager.createQuery(query, User.class)
-                    .setParameter("username", username)
+                    .setParameter("email", email)
                     .getSingleResult();
         } catch (Exception e) {
-            System.out.println("No user found ");
+            e.printStackTrace();
         }
         return null;
     }

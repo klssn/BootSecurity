@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
@@ -16,13 +16,10 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "first_name", nullable = false, length = 64)
     private String firstName;
     @Column(name = "last_name", nullable = false, length = 64)
     private String lastName;
-    @Column(name = "username", nullable = false, unique = true, length = 64)
-    private String username;
     @Column(name = "email", nullable = false, unique = true, length = 64)
     private String email;
     @Column(name = "password", nullable = false, length = 64)
@@ -38,7 +35,8 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    @OrderBy("role ASC")
+    private Set<Role> roles = new LinkedHashSet<>();
 
     @Column(name = "account_non_expired", nullable = false)
     private boolean isAccountNonExpired;
@@ -52,11 +50,10 @@ public class User implements UserDetails {
 
     public User() {}
 
-    public User(String firstName, String lastName, byte age, String username, String email, String password) {
+    public User(String firstName, String lastName, byte age, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
-        this.username = username;
         this.email = email;
         this.password = password;
         this.isAccountNonExpired = true;
@@ -115,7 +112,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
+        Set<GrantedAuthority> authorities = new LinkedHashSet<>();
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getAuthority()));
         }
@@ -131,13 +128,9 @@ public class User implements UserDetails {
         return password;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     public void setAccountNonExpired(boolean accountNonExpired) {
@@ -181,7 +174,6 @@ public class User implements UserDetails {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", age=" + age +
