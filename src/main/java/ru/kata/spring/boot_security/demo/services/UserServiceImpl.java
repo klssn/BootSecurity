@@ -68,6 +68,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public void removeUserById(Long id) {
+        userDAO.deleteUserById(id);
+
+    }
+
+    @Override
     public void editUser(User formUser, String role) {
         User user = userDAO.getUserById(formUser.getId());
         if (user != null) {

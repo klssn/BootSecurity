@@ -10,6 +10,8 @@ public interface UserService {
 
     void removeUserByEmail(String email);
 
+    void removeUserById(Long id);
+
     void editUser (User user, String role);
 
     User getUserById(Long id);

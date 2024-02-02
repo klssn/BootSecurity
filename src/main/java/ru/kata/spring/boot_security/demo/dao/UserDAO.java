@@ -10,6 +10,8 @@ public interface UserDAO {
 
     void deleteUserByEmail(String email);
 
+    void deleteUserById(Long id);
+
     void updateUserInfo(User user);
 
     User getUserByEmail(String email);
