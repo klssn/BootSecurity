@@ -21,7 +21,7 @@ async function fillTableWithUsers() {
                         <td>${user.email}</td>
                         <td>${getUserRoles(user)}</td>
                         <td><button class="btn btn-edit" onclick="callEditModal('${user.id}')">Edit</button></td>
-                        <td><button class="btn btn-danger" onclick="deleteUser('${user.id}')">Delete</button></td>
+                        <td><button class="btn btn-danger" onclick="callDeleteModal('${user.id}')">Delete</button></td>
                     </tr>`
         tableBody.innerHTML += tableUser
     })
@@ -132,7 +132,55 @@ async function callEditModal(id) {
 
 
 // DELETE USER
-async function deleteUser(id) {
+let deleteModal = null
+
+async function callDeleteModal(id) {
+    try {
+        if (!deleteModal) {
+            deleteModal = new bootstrap.Modal(document.getElementById('deleteUserModal'))
+
+            let deleteClickHandler = async (event) => {
+                event.preventDefault()
+
+                let url = '/api/users/' + document.getElementById('deleteId').value
+                let method = 'DELETE'
+
+                try {
+                    await fetch(url, {
+                        method: method
+                    })
+
+                    deleteModal.hide()
+                    await fillTableWithUsers()
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+
+            document.getElementById('deleteSubmit').addEventListener('click', deleteClickHandler)
+        }
+
+        let url = '/api/users/' + id
+        let user = await getData(url)
+
+        document.getElementById('deleteId').value = user.id
+        document.getElementById('deleteFirstName').value = user.firstName
+        document.getElementById('deleteLastName').value = user.lastName
+        document.getElementById('deleteAge').value = user.age
+        document.getElementById('deleteEmail').value = user.email
+        if (user.roles.length > 1) {
+            document.getElementById('deleteRole').value = 'ADMIN'
+        } else {
+            document.getElementById('deleteRole').value = 'USER'
+        }
+
+        deleteModal.show()
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+/*async function deleteUser(id) {
     let url = '/api/users/' + id
     let method = 'DELETE'
 
@@ -145,7 +193,7 @@ async function deleteUser(id) {
     } catch (error) {
         console.log(error)
     }
-}
+}*/
 
 
 // ADD USER

@@ -295,6 +295,80 @@
                     </div>
                     <!-- Edit modal -->
 
+                    <!-- Delete modal -->
+                    <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteUserModalLabel">Delete user</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="font-size: 0.6rem;"></button>
+
+                                </div>
+                                <div class="modal-body py-0 px-0">
+
+                                    <!-- Delete form -->
+                                    <form id="deleteForm">
+
+                                        <div class="container">
+                                            <div class="d-flex justify-content-center">
+                                                <div class="form-group d-flex flex-column align-items-center">
+
+                                                    <label class="form-label-bold mt-3 mb-0"
+                                                           for="deleteId">ID</label>
+                                                    <input class="form-control" type="number"
+                                                           id="deleteId" name="id" readonly/>
+
+                                                    <label class="form-label-bold mt-2 mb-0"
+                                                           for="deleteFirstName">First name</label>
+                                                    <input class="form-control" type="text"
+                                                           id="deleteFirstName" name="firstName" readonly/>
+
+                                                    <label class="form-label-bold mt-2 mb-0"
+                                                           for="deleteLastName">Last name</label>
+                                                    <input class="form-control" type="text"
+                                                           id="deleteLastName" name="lastName" readonly/>
+
+                                                    <label class="form-label-bold mt-2 mb-0"
+                                                           for="deleteAge">Age</label>
+                                                    <input class="form-control" type="number"
+                                                           id="deleteAge" name="age" readonly/>
+
+                                                    <label class="form-label-bold mt-2 mb-0"
+                                                           for="deleteEmail">Email</label>
+                                                    <input class="form-control" type="email"
+                                                           id="deleteEmail" name="email" readonly/>
+
+                                                    <label class="form-label-bold mt-2 mb-0" for="deleteRole">Role</label>
+                                                    <select class="form-select mb-3" id="deleteRole" aria-label="Role" name="role" disabled>
+                                                        <option value="USER">USER</option>
+                                                        <option value="ADMIN">ADMIN</option>
+                                                        <!--<option value="USER"
+                                                                th:selected="${user.roles.size() == 1}">
+                                                            USER
+                                                        </option>
+                                                        <option value="ADMIN"
+                                                                th:selected="${user.roles.size() > 1}">
+                                                            ADMIN
+                                                        </option>-->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer mt-3">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                            </button>
+                                            <button type="submit" class="btn btn-danger" id="deleteSubmit">Delete</button>
+                                        </div>
+                                    </form>
+                                    <!-- Delete form -->
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Delete modal -->
+
                 </div>
 
             </div>
