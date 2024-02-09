@@ -1,6 +1,9 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.dto.RoleDTO;
 import ru.kata.spring.boot_security.demo.dto.UserDTO;
@@ -8,6 +11,7 @@ import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,46 +25,87 @@ public class UserRESTController {
     private UserService userService;
 
     @GetMapping("/users")
-    public List<UserDTO> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
 
         List<UserDTO> usersDTO = new ArrayList<>();
         for (User user : users) {
             usersDTO.add(userToUserDTO(user));
         }
-        return usersDTO;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(usersDTO);
     }
 
     @GetMapping("/users/{id}")
-    public UserDTO getUser(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
         User user = userService.getUserById(id);
+        if (user == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
         UserDTO userDTO = userToUserDTO(user);
-        return userDTO;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userDTO);
+    }
+
+    @GetMapping("/users/currentUser")
+    public ResponseEntity<UserDTO> getUser(Principal principal) {
+        User user = userService.getUserByEmail(principal.getName());
+        if (user == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        UserDTO userDTO = userToUserDTO(user);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userDTO);
     }
 
     @PostMapping("/users")
-    public String addNewUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<String> addNewUser(@RequestBody UserDTO userDTO) {
         User user = userDTOToUser(userDTO);
         user.setPassword(userDTO.getPassword());
         userService.registerNewUser(user, userDTO.getRole());
-        return "New user was successfully added";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
     @PutMapping("/users")
-    public String editUser(@RequestBody UserDTO userDTO) {
-        if (userService.getUserById(userDTO.getId()) != null) {
+    public ResponseEntity<String> editUser(@RequestBody UserDTO userDTO) {
+        User userToEdit = userService.getUserById(userDTO.getId());
+        if (userToEdit != null) {
             User user = userDTOToUser(userDTO);
             user.setId(userDTO.getId());
             user.setPassword(userDTO.getPassword());
             userService.editUser(user, userDTO.getRole());
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
         }
-        return "User was successfully edited";
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
     @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        userService.removeUserById(id);
-        return "User was successfully deleted";
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        if (user != null) {
+            userService.removeUserById(id);
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
     public UserDTO userToUserDTO (User user) {
