@@ -53,6 +53,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    @Transactional
     public User getUserByEmail(String email) {
         try {
             String query = "FROM User WHERE email = :email";

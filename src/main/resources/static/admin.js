@@ -7,9 +7,7 @@ document.addEventListener("DOMContentLoaded", fillTableWithUsers)
 
 async function fillTableWithUsers() {
     const tableBody = document.getElementById('usersTable')
-    if (!tableBody) {
-        return
-    }
+
     let url = '/api/users'
     let users = await getData(url)
 
@@ -30,29 +28,6 @@ async function fillTableWithUsers() {
     })
 }
 
-
-// USER TABLE
-document.addEventListener("DOMContentLoaded", fillTableWithUser)
-async function fillTableWithUser() {
-    const tableBody = document.getElementById('userTable')
-    if (!tableBody) {
-        return
-    }
-    let url = '/api/user/users/currentUser'
-    let user = await getData(url)
-
-    tableBody.innerHTML = ''
-
-    let tableUser = `<tr>
-                    <td>${user.id}</td>
-                    <td>${user.firstName}</td>
-                    <td>${user.lastName}</td>
-                    <td>${user.age}</td>
-                    <td>${user.email}</td>
-                    <td>${getUserRoles(user)}</td>
-                </tr>`
-        tableBody.innerHTML = tableUser
-}
 
 async function getData(url){
     try {
@@ -97,35 +72,37 @@ async function callEditModal(id) {
     editModal.show()
 
     let editClickHandler = async (event) => {
-        event.preventDefault()
+        if (document.getElementById('editForm').checkValidity()) {
+            event.preventDefault()
 
-        let editedUser = {
-            id: document.getElementById('editId').value,
-            firstName: document.getElementById('editFirstName').value,
-            lastName: document.getElementById('editLastName').value,
-            age: document.getElementById('editAge').value,
-            email: document.getElementById('editEmail').value,
-            password: document.getElementById('editPassword').value,
-            role: document.getElementById('editRole').value
-        }
+            let editedUser = {
+                id: document.getElementById('editId').value,
+                firstName: document.getElementById('editFirstName').value,
+                lastName: document.getElementById('editLastName').value,
+                age: document.getElementById('editAge').value,
+                email: document.getElementById('editEmail').value,
+                password: document.getElementById('editPassword').value,
+                role: document.getElementById('editRole').value
+            }
 
-        let url = '/api/users/'
-        let method = 'PUT'
+            let url = '/api/users/'
+            let method = 'PUT'
 
-        try {
-            await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    [csrfHeader]: csrfToken
-                },
-                body: JSON.stringify(editedUser)
-            })
+            try {
+                await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: JSON.stringify(editedUser)
+                })
 
-            editModal.hide()
-            await fillTableWithUsers()
-        } catch (error) {
-            console.log(error)
+                editModal.hide()
+                await fillTableWithUsers()
+            } catch (error) {
+                console.log(error)
+            }
         }
 
     }
@@ -188,55 +165,42 @@ async function callDeleteModal(id) {
     }
 }
 
-/*async function deleteUser(id) {
-    let url = '/api/users/' + id
-    let method = 'DELETE'
-
-    try {
-        await fetch(url, {
-            method: method
-            })
-
-        await fillTableWithUsers()
-    } catch (error) {
-        console.log(error)
-    }
-}*/
-
 
 // ADD USER
 document.addEventListener("DOMContentLoaded", function() {
     let addClickHandler = async (event) => {
-        event.preventDefault()
+        if (document.getElementById('addForm').checkValidity()) {
+            event.preventDefault()
 
-        let newUser = {
-            firstName: document.getElementById('addFirstName').value,
-            lastName: document.getElementById('addLastName').value,
-            age: document.getElementById('addAge').value,
-            email: document.getElementById('addEmail').value,
-            password: document.getElementById('addPassword').value,
-            role: document.getElementById('addRole').value
-        }
+            let newUser = {
+                firstName: document.getElementById('addFirstName').value,
+                lastName: document.getElementById('addLastName').value,
+                age: document.getElementById('addAge').value,
+                email: document.getElementById('addEmail').value,
+                password: document.getElementById('addPassword').value,
+                role: document.getElementById('addRole').value
+            }
 
-        let url = '/api/users/'
-        let method = 'POST'
+            let url = '/api/users/'
+            let method = 'POST'
 
-        try {
-            await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    [csrfHeader]: csrfToken
-                },
-                body: JSON.stringify(newUser)
-            })
+            try {
+                await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: JSON.stringify(newUser)
+                })
 
-            await fillTableWithUsers()
-            clearAddForm()
-            document.querySelector('#nav-home-tab').click()
+                await fillTableWithUsers()
+                clearAddForm()
+                document.querySelector('#nav-home-tab').click()
 
-        } catch (error) {
-            console.log(error)
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 
