@@ -4,17 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.dto.RoleDTO;
 import ru.kata.spring.boot_security.demo.dto.UserDTO;
-import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -29,7 +25,7 @@ public class UserRESTController {
 
         List<UserDTO> usersDTO = new ArrayList<>();
         for (User user : users) {
-            usersDTO.add(userToUserDTO(user));
+            usersDTO.add(userService.userToUserDTO(user));
         }
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -44,13 +40,13 @@ public class UserRESTController {
                     .status(HttpStatus.NOT_FOUND)
                     .build();
         }
-        UserDTO userDTO = userToUserDTO(user);
+        UserDTO userDTO = userService.userToUserDTO(user);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userDTO);
     }
 
-    @GetMapping("/users/currentUser")
+    @GetMapping("/user/users/currentUser")
     public ResponseEntity<UserDTO> getUser(Principal principal) {
         User user = userService.getUserByEmail(principal.getName());
         if (user == null) {
@@ -58,7 +54,7 @@ public class UserRESTController {
                     .status(HttpStatus.NOT_FOUND)
                     .build();
         }
-        UserDTO userDTO = userToUserDTO(user);
+        UserDTO userDTO = userService.userToUserDTO(user);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userDTO);
@@ -66,7 +62,7 @@ public class UserRESTController {
 
     @PostMapping("/users")
     public ResponseEntity<String> addNewUser(@RequestBody UserDTO userDTO) {
-        User user = userDTOToUser(userDTO);
+        User user = userService.userDTOToUser(userDTO);
         user.setPassword(userDTO.getPassword());
         userService.registerNewUser(user, userDTO.getRole());
         return ResponseEntity
@@ -78,7 +74,7 @@ public class UserRESTController {
     public ResponseEntity<String> editUser(@RequestBody UserDTO userDTO) {
         User userToEdit = userService.getUserById(userDTO.getId());
         if (userToEdit != null) {
-            User user = userDTOToUser(userDTO);
+            User user = userService.userDTOToUser(userDTO);
             user.setId(userDTO.getId());
             user.setPassword(userDTO.getPassword());
             userService.editUser(user, userDTO.getRole());
@@ -106,59 +102,5 @@ public class UserRESTController {
                 .status(HttpStatus.NO_CONTENT)
                 .build();
     }
-
-    public UserDTO userToUserDTO (User user) {
-        UserDTO userDTO = new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getAge(), user.getEmail());
-        Set<RoleDTO> rolesDTO = new LinkedHashSet<>();
-        for (Role role : user.getRoles()) {
-            rolesDTO.add(roleToRoleDTO(role));
-        }
-        userDTO.setRoles(rolesDTO);
-        return userDTO;
-    }
-
-    public User userDTOToUser (UserDTO userDTO) {
-        User user = new User(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getAge(), userDTO.getEmail(), userDTO.getPassword());
-        return user;
-    }
-
-
-    public RoleDTO roleToRoleDTO (Role role) {
-        return new RoleDTO(role.getRole());
-    }
-
-
-
-    /*
-    @GetMapping("/users")
-    public List<User> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return users;
-    }
-
-    @GetMapping("/users/{id}")
-    public User getUser(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        return user;
-    }
-
-    @PostMapping("/users")
-    public String addNewUser(@RequestBody User user, @RequestBody String role) {
-        userService.registerNewUser(user, role);
-        return "New user was successfully added";
-    }
-
-    @PutMapping("/users")
-    public String editUser(@RequestBody User user, @RequestBody String role) {
-        userService.editUser(user, role);
-        return "User was successfully edited";
-    }
-
-    @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        userService.removeUserById(id);
-        return "User was successfully deleted";
-    }
-    */
 
 }

@@ -1,3 +1,6 @@
+let csrfToken = document.querySelector("meta[name='_csrf']").getAttribute("content")
+let csrfHeader = document.querySelector("meta[name='_csrf_header']").getAttribute("content")
+
 
 // USERS TABLE
 document.addEventListener("DOMContentLoaded", fillTableWithUsers)
@@ -35,7 +38,7 @@ async function fillTableWithUser() {
     if (!tableBody) {
         return
     }
-    let url = '/api/users/currentUser'
+    let url = '/api/user/users/currentUser'
     let user = await getData(url)
 
     tableBody.innerHTML = ''
@@ -113,7 +116,8 @@ async function callEditModal(id) {
             await fetch(url, {
                 method: method,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
                 },
                 body: JSON.stringify(editedUser)
             })
@@ -147,7 +151,11 @@ async function callDeleteModal(id) {
 
                 try {
                     await fetch(url, {
-                        method: method
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            [csrfHeader]: csrfToken
+                        }
                     })
 
                     deleteModal.hide()
@@ -217,7 +225,8 @@ document.addEventListener("DOMContentLoaded", function() {
             await fetch(url, {
                 method: method,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
                 },
                 body: JSON.stringify(newUser)
             })

@@ -7,12 +7,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 
 
@@ -38,11 +35,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // .csrf().disable()
         http
-                .csrf().disable()
+                .csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and()
                 .authorizeRequests()
-                .antMatchers("/", "/index", "/login", "/api/**").permitAll()
-                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
-                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/", "/index", "/login").permitAll()
+                .antMatchers("/user/**", "/api/user/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/admin/**", "/api/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
 
 
@@ -55,19 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/login")
                 .permitAll();
     }
-
-    // inMemory auth
-    /*@Bean
-    @Override
-    public UserDetailsService userDetailsService() {
-        UserDetails user =
-                User.withDefaultPasswordEncoder()
-                        .username("user")
-                        .password("user")
-                        .roles("USER") // ROLE_USER, authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
-                        .build();
-        return new InMemoryUserDetailsManager(user);
-    }*/
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

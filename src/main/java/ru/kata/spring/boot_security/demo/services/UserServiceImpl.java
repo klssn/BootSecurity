@@ -9,10 +9,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.dao.RoleDAO;
 import ru.kata.spring.boot_security.demo.dao.UserDAO;
+import ru.kata.spring.boot_security.demo.dto.RoleDTO;
+import ru.kata.spring.boot_security.demo.dto.UserDTO;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -133,6 +136,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<User> getAllUsers() {
         return userDAO.getAllUsers();
     }
+
+
+    @Override
+    public UserDTO userToUserDTO (User user) {
+        UserDTO userDTO = new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getAge(), user.getEmail());
+        Set<RoleDTO> rolesDTO = new LinkedHashSet<>();
+        for (Role role : user.getRoles()) {
+            rolesDTO.add(new RoleDTO(role.getRole()));
+        }
+        userDTO.setRoles(rolesDTO);
+        return userDTO;
+    }
+
+    @Override
+    public User userDTOToUser (UserDTO userDTO) {
+        User user = new User(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getAge(), userDTO.getEmail(), userDTO.getPassword());
+        return user;
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

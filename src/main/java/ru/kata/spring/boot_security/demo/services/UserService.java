@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.services;
 
+import ru.kata.spring.boot_security.demo.dto.UserDTO;
 import ru.kata.spring.boot_security.demo.models.User;
 
 import java.util.List;
@@ -17,4 +18,9 @@ public interface UserService {
     User getUserById(Long id);
     User getUserByEmail(String email);
     List<User> getAllUsers();
+
+    // REST
+    UserDTO userToUserDTO (User user);
+    User userDTOToUser (UserDTO userDTO);
+
 }
